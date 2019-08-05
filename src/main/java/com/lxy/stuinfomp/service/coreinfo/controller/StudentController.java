@@ -63,7 +63,7 @@ public class StudentController extends AbstractBaseController<Students> {
             @ApiImplicitParam(name = "pageSize", value = "笔数", required = true, paramType = "path")
     })
     @GetMapping(value = "page/{pageNum}/{pageSize}")
-    public AbstractBaseResult selectListStudents(@ApiParam(name = "商品信息", required = false) Students student,
+    public AbstractBaseResult selectListStudents(@ApiParam(name = "学生信息", required = false) Students student,
                                                  @PathVariable int pageNum,
                                                  @PathVariable int pageSize){
         try {
@@ -86,7 +86,7 @@ public class StudentController extends AbstractBaseController<Students> {
         try {
             Integer.valueOf(student.getGrade());
         } catch (NumberFormatException e) {
-            log.error("StudentController.insertStudent() eror = {}",e);
+            log.error("StudentController.updateStudentInfo() eror = {}",e);
             return error("入学年级必须是数字类型，例如：1709",null);
         }
         Students result = studentService.save(student);

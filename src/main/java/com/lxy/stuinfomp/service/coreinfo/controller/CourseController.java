@@ -1,10 +1,10 @@
 package com.lxy.stuinfomp.service.coreinfo.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.lxy.stuinfomp.commons.domain.Courses;
 import com.lxy.stuinfomp.commons.domain.Students;
-import com.lxy.stuinfomp.commons.domain.Teachers;
 import com.lxy.stuinfomp.commons.dto.AbstractBaseResult;
-import com.lxy.stuinfomp.commons.service.TeacherService;
+import com.lxy.stuinfomp.commons.service.CourseService;
 import com.lxy.stuinfomp.commons.validator.BeanValidator;
 import com.lxy.stuinfomp.commons.web.AbstractBaseController;
 import io.swagger.annotations.ApiImplicitParam;
@@ -21,56 +21,53 @@ import org.springframework.web.bind.annotation.*;
  * @author lxy
  */
 @RestController
-@RequestMapping(value = "core/teacher")
+@RequestMapping("core/course")
 @Slf4j
-public class TeacherController extends AbstractBaseController<Teachers> {
-
+public class CourseController extends AbstractBaseController<Courses> {
     @Autowired
-    private TeacherService teacherService;
+    private CourseService courseService;
 
-    @ApiOperation(value = "新增教师信息",notes = "")
+    @ApiOperation(value = "添加课程信息",notes = "")
     @PostMapping(value = "add")
-    public AbstractBaseResult insertTeacherInfo(Teachers teacher){
-        Long maxId = teacherService.selectMaxId();
-        Long teacherNumber = 100000 + maxId;
-        teacher.setTeacherNumber(teacherNumber);
-        Teachers result = teacherService.save(teacher);
-        if(null != result){
+    public AbstractBaseResult insertCourse(@ApiParam(name = "course",value = "课程信息") Courses course){
+        String message = BeanValidator.validator(course);
+        if (StringUtils.isNotBlank(message)){
+            return error(message,null);
+        }
+        Courses result = courseService.save(course);
+        if (null != result){
             response.setStatus(HttpStatus.CREATED.value());
             return success(request.getRequestURI(),result);
         }
-        return error("新增失败，请重试",null);
+        return error("新增课程失败，请重试",null);
     }
 
-    @ApiOperation(value = "教师信息分页查询")
+    @ApiOperation(value = "课程信息分页查询")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "pageNum", value = "页码", required = true, paramType = "path"),
             @ApiImplicitParam(name = "pageSize", value = "笔数", required = true, paramType = "path")
     })
     @GetMapping(value = "page/{pageNum}/{pageSize}")
-    public AbstractBaseResult selectTeachers(@ApiParam(name = "教师信息", required = false) Teachers teacher,
-                                             @PathVariable int pageNum,
-                                             @PathVariable int pageSize){
+    public AbstractBaseResult selectCourses(@ApiParam(name = "课程信息", required = false) Courses course,
+                                                 @PathVariable int pageNum,
+                                                 @PathVariable int pageSize){
         try {
-            PageInfo<Teachers> pageInfo = teacherService.page(teacher, pageNum, pageSize);
+            PageInfo<Courses> pageInfo = courseService.page(course, pageNum, pageSize);
             return success(request.getRequestURI(),pageInfo.getNextPage(),pageInfo.getPages(),pageInfo.getList());
         } catch (Exception e) {
-            log.error("TeacherController.selectTeachers()...error = {}",e);
+            log.error("CourseController.selectCourses() error = {}",e);
         }
         return error("查询失败，请重试",null);
     }
 
-    @ApiOperation(value = "教师信息更新")
+    @ApiOperation(value = "课程信息更新")
     @PostMapping(value = "updateById")
-    public AbstractBaseResult updateTeacherInfo(@ApiParam(name = "教师信息", required = true) Teachers teacher){
-        String message = BeanValidator.validator(teacher);
+    public AbstractBaseResult updateCourseInfo(@ApiParam(name = "课程信息", required = true) Courses course){
+        String message = BeanValidator.validator(course);
         if (StringUtils.isNotBlank(message)){
             return error(message,null);
         }
-        if (teacher.getId() == null){
-            return error("修改失败,系统错误","updateTeacherInfo()教师的ID不能为空");
-        }
-        Teachers result = teacherService.save(teacher);
+        Courses result = courseService.save(course);
         if (null != result){
             response.setStatus(HttpStatus.OK.value());
             return success(request.getRequestURI(),result);
@@ -78,10 +75,10 @@ public class TeacherController extends AbstractBaseController<Teachers> {
         return error("修改失败，请重试",null);
     }
 
-    @ApiOperation(value = "逻辑删除教师信息")
+    @ApiOperation(value = "逻辑删除课程信息")
     @GetMapping(value = "deleteById/{id}")
-    public AbstractBaseResult deleteById(@ApiParam(name = "教师信息",required = true) @PathVariable Long id){
-        Teachers result = teacherService.deleteById(new Teachers(), id);
+    public AbstractBaseResult deleteById(@ApiParam(name = "课程信息",required = true) @PathVariable Long id){
+        Courses result = courseService.deleteById(new Courses(), id);
         if (null != result){
             response.setStatus(HttpStatus.OK.value());
             return success(request.getRequestURI(),result);
