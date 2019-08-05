@@ -1,7 +1,6 @@
 package com.lxy.stuinfomp.service.coreinfo.controller;
 
 import com.github.pagehelper.PageInfo;
-import com.lxy.stuinfomp.commons.domain.Students;
 import com.lxy.stuinfomp.commons.domain.Teachers;
 import com.lxy.stuinfomp.commons.dto.AbstractBaseResult;
 import com.lxy.stuinfomp.commons.service.TeacherService;
@@ -34,6 +33,7 @@ public class TeacherController extends AbstractBaseController<Teachers> {
         Long maxId = teacherService.selectMaxId();
         Long teacherNumber = 100000 + maxId;
         teacher.setTeacherNumber(teacherNumber);
+        teacher.setIsDelete(0);
         Teachers result = teacherService.save(teacher);
         if(null != result){
             response.setStatus(HttpStatus.CREATED.value());

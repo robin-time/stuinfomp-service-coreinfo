@@ -47,7 +47,7 @@ public class StudentController extends AbstractBaseController<Students> {
         Long maxId = studentService.selectMaxId();
         Long studentId = ++maxId + 1000000;
         student.setStudentId(student.getGrade() + studentId);
-
+        student.setIsDelete(0);
         Students result = studentService.save(student);
         if (null != result){
             response.setStatus(HttpStatus.CREATED.value());
