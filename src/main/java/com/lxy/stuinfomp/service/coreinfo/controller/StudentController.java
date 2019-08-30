@@ -6,12 +6,14 @@ import com.lxy.stuinfomp.commons.dto.AbstractBaseResult;
 import com.lxy.stuinfomp.commons.service.StudentService;
 import com.lxy.stuinfomp.commons.validator.BeanValidator;
 import com.lxy.stuinfomp.commons.web.AbstractBaseController;
+import com.lxy.stuinfomp.service.coreinfo.requestentity.StudentDTO;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,7 @@ public class StudentController extends AbstractBaseController<Students> {
 
     @ApiOperation(value = "添加学生",notes = "")
     @PostMapping(value = "add")
-    public AbstractBaseResult insertStudent(@ApiParam(name = "student",value = "学生信息")Students student){
+    public AbstractBaseResult insertStudent(@RequestBody StudentDTO student){
         String message = BeanValidator.validator(student);
         if (StringUtils.isNotBlank(message)){
             return error(message,null);
@@ -46,9 +48,11 @@ public class StudentController extends AbstractBaseController<Students> {
 
         Long maxId = studentService.selectMaxId();
         Long studentId = ++maxId + 1000000;
-        student.setStudentId(student.getGrade() + studentId);
-        student.setIsDelete(0);
-        Students result = studentService.save(student);
+        Students stu = new Students();
+        BeanUtils.copyProperties(student,stu);
+        stu.setStudentId(student.getGrade() + studentId);
+        stu.setIsDeleted(0);
+        Students result = studentService.save(stu);
         if (null != result){
             response.setStatus(HttpStatus.CREATED.value());
             return success(request.getRequestURI(),result);

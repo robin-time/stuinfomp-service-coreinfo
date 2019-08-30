@@ -33,7 +33,7 @@ public class TeacherController extends AbstractBaseController<Teachers> {
         Long maxId = teacherService.selectMaxId();
         Long teacherNumber = 100000 + maxId;
         teacher.setTeacherNumber(teacherNumber);
-        teacher.setIsDelete(0);
+        teacher.setIsDeleted(0);
         Teachers result = teacherService.save(teacher);
         if(null != result){
             response.setStatus(HttpStatus.CREATED.value());
