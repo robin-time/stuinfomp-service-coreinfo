@@ -47,6 +47,9 @@ public class StudentController extends AbstractBaseController<Students> {
         }
 
         Long maxId = studentService.selectMaxId();
+        if (null == maxId){
+            maxId = 0L;
+        }
         Long studentId = ++maxId + 1000000;
         Students stu = new Students();
         BeanUtils.copyProperties(student,stu);

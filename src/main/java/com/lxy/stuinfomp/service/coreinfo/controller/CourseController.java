@@ -2,17 +2,18 @@ package com.lxy.stuinfomp.service.coreinfo.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.lxy.stuinfomp.commons.domain.Courses;
-import com.lxy.stuinfomp.commons.domain.Students;
 import com.lxy.stuinfomp.commons.dto.AbstractBaseResult;
 import com.lxy.stuinfomp.commons.service.CourseService;
 import com.lxy.stuinfomp.commons.validator.BeanValidator;
 import com.lxy.stuinfomp.commons.web.AbstractBaseController;
+import com.lxy.stuinfomp.service.coreinfo.requestentity.CourseDTO;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +30,20 @@ public class CourseController extends AbstractBaseController<Courses> {
 
     @ApiOperation(value = "添加课程信息",notes = "")
     @PostMapping(value = "add")
-    public AbstractBaseResult insertCourse(@ApiParam(name = "course",value = "课程信息") Courses course){
+    public AbstractBaseResult insertCourse(@ApiParam(name = "course",value = "课程信息") @RequestBody CourseDTO course){
         String message = BeanValidator.validator(course);
         if (StringUtils.isNotBlank(message)){
             return error(message,null);
         }
-        Courses result = courseService.save(course);
+        Long maxId = courseService.selectMaxId();
+        if (null == maxId){
+            maxId = 0L;
+        }
+        Courses courses = new Courses();
+        maxId = ++maxId + 10000L;
+        BeanUtils.copyProperties(course,courses);
+        courses.setCourseNumber(maxId);
+        Courses result = courseService.save(courses);
         if (null != result){
             response.setStatus(HttpStatus.CREATED.value());
             return success(request.getRequestURI(),result);

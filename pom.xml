@@ -68,6 +68,10 @@
             <version>${project.parent.version}</version>
         </dependency>
         <!-- Projects End -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

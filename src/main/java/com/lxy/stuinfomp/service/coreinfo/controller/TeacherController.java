@@ -6,12 +6,14 @@ import com.lxy.stuinfomp.commons.dto.AbstractBaseResult;
 import com.lxy.stuinfomp.commons.service.TeacherService;
 import com.lxy.stuinfomp.commons.validator.BeanValidator;
 import com.lxy.stuinfomp.commons.web.AbstractBaseController;
+import com.lxy.stuinfomp.service.coreinfo.requestentity.TeacherDTO;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +31,17 @@ public class TeacherController extends AbstractBaseController<Teachers> {
 
     @ApiOperation(value = "新增教师信息",notes = "")
     @PostMapping(value = "add")
-    public AbstractBaseResult insertTeacherInfo(Teachers teacher){
+    public AbstractBaseResult insertTeacherInfo(@RequestBody TeacherDTO teacher){
         Long maxId = teacherService.selectMaxId();
-        Long teacherNumber = 100000 + maxId;
+        if (maxId == null){
+            maxId = 0L;
+        }
+        Long teacherNumber = ++maxId + 100000L;
         teacher.setTeacherNumber(teacherNumber);
-        teacher.setIsDeleted(0);
-        Teachers result = teacherService.save(teacher);
+        Teachers teachers = new Teachers();
+        BeanUtils.copyProperties(teacher,teachers);
+        teachers.setIsDeleted(0);
+        Teachers result = teacherService.save(teachers);
         if(null != result){
             response.setStatus(HttpStatus.CREATED.value());
             return success(request.getRequestURI(),result);
