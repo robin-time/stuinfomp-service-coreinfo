@@ -22,7 +22,7 @@ public class StudentDTO  {
      * 学生姓名
      */
     @NotNull(message = "学生姓名不能为空")
-    @Length(min = 5,max = 25,message = "学生名字长度介于5到25之间")
+    @Length(min = 3,max = 25,message = "学生名字长度介于3到25之间")
     private String name;
 
     /**
